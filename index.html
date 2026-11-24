@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>내 옷장 version 3.2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;700&display=swap">
+<style>
+:root{--bg:#f3ede2;--card:#fbf8f1;--ink:#231f1a;--sub:#7b7263;--line:#d9cfbd;--accent:#3a6b5a;--accent-ink:#f3e9d2;--gold:#b08d4a;--chip:#ebe3d3;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171a;--card:#1e2125;--ink:#ece4d3;--sub:#9a937f;--line:#33363a;--accent:#dcb96f;--accent-ink:#15171a;--gold:#c9a45c;--chip:#272a2e;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171a;--card:#1e2125;--ink:#ece4d3;--sub:#9a937f;--line:#33363a;--accent:#dcb96f;--accent-ink:#15171a;--gold:#c9a45c;--chip:#272a2e;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg)}
+body::before{content:"";position:fixed;inset:env(safe-area-inset-top,0px) 0 0 0;z-index:-1;pointer-events:none;background-image:radial-gradient(rgba(176,141,74,.55) 1.6px,transparent 2px);background-size:18px 18px}
+body{margin:0;background:transparent;color:var(--ink);font-family:Jua,"Noto Sans KR",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;font-synthesis:none;max-width:720px;margin-inline:auto;padding:18px 16px 100px}
+input,select,textarea,button{font:inherit;color:inherit}
+header{text-align:center;margin:-18px -16px 14px;padding:28px 16px 14px;background:var(--bg);border-bottom:3px double var(--gold)}
+.hang{width:150px;margin:0 auto}
+.hang svg{display:block;width:100%;height:auto;color:var(--gold)}
+h1{margin:2px 0 4px;padding-left:.18em;font-size:26px;letter-spacing:.18em;font-weight:700;white-space:nowrap}
+.ver{font-size:11px;letter-spacing:.06em;font-weight:700;color:var(--gold);border:1px solid var(--gold);padding:1px 7px;border-radius:3px;vertical-align:middle;margin-left:6px}
+.sub{color:var(--sub);font-size:13px;letter-spacing:.04em}
+.stat{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.vr{font-size:12px;letter-spacing:.04em;color:var(--sub);white-space:nowrap}
+.search{width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:4px;background:var(--card);outline:0;font-size:16px}
+.chips{display:flex;flex-wrap:wrap;gap:7px;padding:12px 0 4px}
+.chips.s{padding:6px 0 10px}
+.chip{border:1px solid var(--line);background:var(--card);padding:6px 13px;border-radius:3px;cursor:pointer;font-size:13px;transition:transform .12s}
+.chip:active,.btn:active,.fab:active{transform:scale(.96)}
+.chip.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chips.s .chip{font-size:12px;border-style:dashed}
+.chips.s .chip.on{border-style:solid}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:560px){.grid{grid-template-columns:repeat(3,1fr)}}
+.item{background:var(--card);border:1px solid var(--line);border-radius:4px;overflow:hidden;cursor:pointer;position:relative;box-shadow:0 1px 0 var(--gold);transition:transform .12s}
+.item:active{transform:scale(.98)}
+.ph{aspect-ratio:3/4;background:var(--chip);display:flex;align-items:center;justify-content:center;font-size:46px;position:relative}
+.ph svg{position:absolute;width:70%;opacity:.22;color:var(--gold)}
+.ph img{width:100%;height:100%;object-fit:cover;display:block;position:relative}
+.meta{padding:9px 11px;border-top:1px solid var(--line)}
+.n{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.s{font-size:12px;color:var(--sub);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr{font-size:12px;color:var(--gold);margin-top:3px;font-weight:700}
+.star{position:absolute;top:8px;right:8px;background:var(--accent);color:var(--gold);border-radius:3px;padding:2px 7px;font-size:13px;z-index:1}
+.tag{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.55);color:#fff;border-radius:3px;padding:2px 7px;font-size:12px;z-index:1}
+.empty{text-align:center;color:var(--sub);padding:40px 12px;line-height:1.8}
+.empty svg{width:200px;color:var(--gold);margin-bottom:8px}
+.fab{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--accent);color:var(--accent-ink);border:1px solid var(--gold);border-radius:4px;padding:14px 22px;font-weight:700;letter-spacing:.06em;box-shadow:0 6px 18px rgba(0,0,0,.28);cursor:pointer;transition:transform .12s}
+dialog{border:1px solid var(--gold);border-bottom:0;border-radius:8px 8px 0 0;background:var(--card);color:var(--ink);width:100%;max-width:560px;max-height:94vh;margin:auto auto 0;padding:0;overflow:auto}
+dialog[open]{animation:up .3s cubic-bezier(.2,.8,.2,1)}
+@keyframes up{from{transform:translateY(40%);opacity:.4}to{transform:none;opacity:1}}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+.nav{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:18px 16px 10px;background:var(--card);border-bottom:1px solid var(--line);touch-action:none}
+.nav::before{content:"";position:absolute;top:6px;left:50%;width:38px;height:4px;margin-left:-19px;border-radius:2px;background:var(--gold);opacity:.6}
+.tt{font-weight:700;font-size:16px;letter-spacing:.08em}
+.tb{border:0;background:none;color:var(--accent);font-size:16px;cursor:pointer;padding:4px}
+.tb.b{font-weight:700}
+.tb:disabled{opacity:.4}
+.sheet{padding:16px 16px calc(24px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px}
+.pic{aspect-ratio:4/3;border:1px dashed var(--gold);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--sub);cursor:pointer;overflow:hidden;background:var(--bg);text-align:center;font-size:14px;line-height:1.7}
+.pic img{width:100%;height:100%;object-fit:contain}
+label{font-size:12px;color:var(--sub);display:block;margin-bottom:4px;letter-spacing:.05em}
+.f{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:3px;background:var(--bg);font-size:16px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fr{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:3px;padding:8px 12px;background:var(--bg)}
+.fr span{font-size:14px}
+.sw{position:relative;width:51px;height:31px;flex:none;margin:0}
+.sw input{opacity:0;width:100%;height:100%;margin:0;position:absolute;z-index:1;cursor:pointer}
+.sw i{position:absolute;inset:0;border-radius:99px;background:var(--line);transition:background .2s}
+.sw i::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.3);transition:transform .2s}
+.sw input:checked+i{background:var(--accent)}
+.sw input:checked+i::after{transform:translateX(20px)}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{flex:1;padding:12px;border-radius:3px;border:1px solid var(--line);background:var(--bg);cursor:pointer;font-weight:700;transition:transform .12s}
+.btn.d{color:#b3402f}
+.info{font-size:13px;color:var(--sub);min-height:18px;text-align:center}
+h1{font-size:30px}
+.sub{font-size:15px}
+.vr{font-size:14px}
+.search{font-size:17px}
+.chip{font-size:15px}
+.chips.s .chip{font-size:14px}
+.n{font-size:16px}
+.s{font-size:14px}
+.pr{font-size:14px}
+.star{font-size:15px}
+.tag{font-size:14px}
+.empty{font-size:16px}
+.fab{font-size:17px}
+.tt{font-size:18px}
+.tb{font-size:18px}
+.pic{font-size:16px}
+label{font-size:14px}
+.f{font-size:17px}
+.fr span{font-size:16px}
+.btn{font-size:17px}
+.info{font-size:14px}
+.sel{position:relative;cursor:pointer}
+.sel select{pointer-events:none;font-family:inherit}
+select,option{font-family:inherit}
+#pk{max-height:70vh}
+.pkh{padding:18px 16px 10px;text-align:center;color:var(--sub);font-size:15px;border-bottom:1px solid var(--line);letter-spacing:.06em}
+.pko{display:flex;justify-content:space-between;align-items:center;width:100%;border:0;border-bottom:1px solid var(--line);background:transparent;padding:15px 20px;font-size:18px;cursor:pointer;text-align:left}
+.pko:active{background:var(--chip)}
+.pko.on{color:var(--accent)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="hg" viewBox="0 0 64 64"><path d="M32 14a5 5 0 1 1 5 5c-3 1-5 2-5 5v3M32 27L6 44a3 3 0 0 0 2 5h48a3 3 0 0 0 2-5z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs></svg>
+<header>
+  <div class="hang"><svg viewBox="0 0 240 82" aria-hidden="true"><path d="M120 40V30C120 24 130 22 130 14A10 10 0 0 0 110 14" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M120 40L16 70Q10 72 12 77H228Q230 72 224 70Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg>
+  <h1>내 옷장</h1></div>
+  <div class="stat"><div class="sub" id="count">불러오는 중…</div><span class="vr">version 3.2</span></div>
+</header>
+<input class="search" id="q" placeholder="이름, 브랜드, 색상 검색" type="search">
+<div class="chips" id="chips"></div>
+<div class="chips s" id="subchips" hidden></div>
+<div class="grid" id="grid"></div>
+<div class="empty" id="empty" hidden>
+  <svg viewBox="0 0 200 70" aria-hidden="true"><path d="M4 10h192" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><use href="#hg" x="14" y="6" width="50" height="50"/><use href="#hg" x="75" y="6" width="50" height="50"/><use href="#hg" x="136" y="6" width="50" height="50"/></svg><br>
+  옷장이 비어 있어요.<br>아래 버튼으로 첫 옷을 등록해 보세요. 👔
+</div>
+<button class="fab" id="add">+ 등록</button>
+
+<dialog id="dlg">
+  <div class="nav"><button class="tb" id="cancel">취소</button><div class="tt" id="ttl">새 옷</div><button class="tb b" id="save">저장</button></div>
+  <div class="sheet">
+    <div class="pic" id="pic">📷 사진 추가</div>
+    <input type="file" id="file" accept="image/*" hidden>
+    <div><label>이름</label><input class="f" id="name" placeholder="예: 네이비 울 블레이저"></div>
+    <div class="row">
+      <div><label>종류</label><div class="sel"><select class="f" id="cat" tabindex="-1"></select></div></div>
+      <div><label>세부 종류</label><div class="sel"><select class="f" id="sub" tabindex="-1"></select></div></div>
+    </div>
+    <div class="row">
+      <div><label>계절</label><div class="sel"><select class="f" id="season" tabindex="-1"></select></div></div>
+      <div><label>가격 (원)</label><input class="f" id="price" type="number" inputmode="numeric" min="0" placeholder="0"></div>
+    </div>
+    <div class="row">
+      <div><label>색상</label><input class="f" id="color" placeholder="네이비"></div>
+      <div><label>사이즈</label><input class="f" id="size" placeholder="M"></div>
+    </div>
+    <div><label>브랜드</label><input class="f" id="brand"></div>
+    <div><label>메모</label><textarea class="f" id="memo" rows="2"></textarea></div>
+    <div class="fr"><span>★ 즐겨찾기</span><label class="sw"><input type="checkbox" id="favsw"><i></i></label></div>
+    <div class="btns" id="acts"><button class="btn" id="wear">👕 오늘 입었어요</button><button class="btn d" id="del">삭제</button></div>
+    <div class="info" id="info"></div>
+  </div>
+</dialog>
+
+<dialog id="pk"><div class="pkh" id="pkt"></div><div id="pkl"></div></dialog>
+<script>
+var CATS=[
+ {n:"상의",e:"👔",s:["티셔츠","셔츠·블라우스","니트·스웨터","맨투맨·후드"]},
+ {n:"하의",e:"👖",s:["청바지","슬랙스","반바지","치마"]},
+ {n:"아우터",e:"🧥",s:["코트","재킷·블레이저","패딩","가디건"]},
+ {n:"원피스",e:"👗",s:["캐주얼","정장·포멀","파티"]},
+ {n:"운동복",e:"🏃",s:["러닝","테니스","헬스·요가","등산","골프","수영","구기·팀웨어","기타"]},
+ {n:"신발",e:"👟",s:["스니커즈","구두","부츠","샌들·슬리퍼"]},
+ {n:"가방",e:"👜",s:["백팩","크로스백","토트·숄더","클러치·파우치"]},
+ {n:"액세서리",e:"💍",s:["시계","반지","목걸이","귀걸이","팔찌","모자","안경·선글라스","벨트","스카프·머플러","넥타이","장갑","양말","헤어","기타"]}
+];
+var SUBE={"시계":"⌚","반지":"💍","목걸이":"📿","귀걸이":"✨","팔찌":"🔗","모자":"🧢","안경·선글라스":"🕶️","벨트":"🪢","스카프·머플러":"🧣","넥타이":"👔","장갑":"🧤","양말":"🧦","헤어":"🎀","러닝":"🏃","테니스":"🎾","헬스·요가":"🧘","등산":"🥾","골프":"⛳","수영":"🏊","구기·팀웨어":"⚽"};
+var SEASONS=["사계절","봄·가을","여름","겨울"];
+var $=function(i){return document.getElementById(i)};
+var db=null,assets=null,col=null,items=[],filter="전체",subf="",cur=null,imgData=null;
+function cat(n){return CATS.filter(function(c){return c.n===n})[0]}
+function emo(it){return SUBE[it.sub]||(cat(it.category)||{e:"👕"}).e}
+function won(v){return "₩"+Number(v).toLocaleString("ko-KR")}
+function fill(sel,arr){sel.textContent="";arr.forEach(function(v){var o=document.createElement("option");o.value=o.textContent=v;sel.appendChild(o)})}
+fill($("cat"),CATS.map(function(c){return c.n}));fill($("season"),SEASONS);
+function syncSub(val){
+  var c=cat($("cat").value),sb=$("sub");sb.textContent="";
+  var o=document.createElement("option");o.value="";o.textContent="선택 안 함";sb.appendChild(o);
+  if(c)c.s.forEach(function(v){var p=document.createElement("option");p.value=p.textContent=v;sb.appendChild(p)});
+  sb.value=val||"";
+}
+$("cat").onchange=function(){syncSub()};
+function openPick(sel){
+  var w=sel.parentNode,lab=w.previousElementSibling;
+  $("pkt").textContent=lab?lab.textContent:"선택";
+  var L=$("pkl");L.textContent="";
+  Array.prototype.forEach.call(sel.options,function(o){
+    var b=document.createElement("button");b.className="pko"+(o.value===sel.value?" on":"");
+    var t=document.createElement("span");t.textContent=o.textContent;b.appendChild(t);
+    if(o.value===sel.value){var c=document.createElement("span");c.textContent="✓";b.appendChild(c)}
+    b.onclick=function(){sel.value=o.value;sel.dispatchEvent(new Event("change"));$("pk").close()};
+    L.appendChild(b);
+  });
+  $("pk").showModal();
+}
+document.querySelectorAll(".sel").forEach(function(w){w.onclick=function(){openPick(w.querySelector("select"))}});
+$("pk").addEventListener("click",function(e){if(e.target===$("pk"))$("pk").close()});
+
+function mkChip(label,on,fn,host){
+  var b=document.createElement("button");b.className="chip"+(on?" on":"");b.textContent=label;b.onclick=fn;host.appendChild(b);
+}
+function renderChips(){
+  var c=$("chips");c.textContent="";
+  mkChip("전체",filter==="전체",function(){filter="전체";subf="";render()},c);
+  mkChip("★ 즐겨찾기",filter==="즐겨찾기",function(){filter="즐겨찾기";subf="";render()},c);
+  CATS.forEach(function(k){mkChip(k.e+" "+k.n,filter===k.n,function(){filter=k.n;subf="";render()},c)});
+  var sc=$("subchips"),k=cat(filter);sc.textContent="";
+  if(k){
+    sc.hidden=false;
+    mkChip("전체",!subf,function(){subf="";render()},sc);
+    k.s.forEach(function(s){mkChip((SUBE[s]||"")+" "+s,subf===s,function(){subf=s;render()},sc)});
+  }else sc.hidden=true;
+}
+function render(){
+  renderChips();
+  var q=$("q").value.trim().toLowerCase();
+  var list=items.filter(function(it){
+    if(filter==="즐겨찾기"&&!it.fav)return false;
+    if(filter!=="전체"&&filter!=="즐겨찾기"&&it.category!==filter)return false;
+    if(subf&&it.sub!==subf)return false;
+    if(q&&[it.name,it.brand,it.color,it.memo,it.sub].join(" ").toLowerCase().indexOf(q)<0)return false;
+    return true;
+  }).sort(function(a,b){return (b.created||0)-(a.created||0)});
+  var g=$("grid");g.textContent="";
+  list.forEach(function(it){
+    var d=document.createElement("div");d.className="item";
+    var ph=document.createElement("div");ph.className="ph";
+    if(it.img){var im=document.createElement("img");im.src=it.img;im.loading="lazy";im.alt="";ph.appendChild(im)}
+    else{ph.insertAdjacentHTML("afterbegin",'<svg viewBox="0 0 64 64" aria-hidden="true"><use href="#hg"/></svg>');var em=document.createElement("span");em.textContent=emo(it);em.style.position="relative";ph.appendChild(em)}
+    d.appendChild(ph);
+    var tg=document.createElement("div");tg.className="tag";tg.textContent=emo(it);d.appendChild(tg);
+    if(it.fav){var s=document.createElement("div");s.className="star";s.textContent="★";d.appendChild(s)}
+    var m=document.createElement("div");m.className="meta";
+    var n=document.createElement("div");n.className="n";n.textContent=it.name||"이름 없음";
+    var sb=document.createElement("div");sb.className="s";
+    sb.textContent=[it.sub||it.category,it.color].filter(Boolean).join(" · ")+(it.worn?" · "+it.worn+"회 착용":"");
+    m.appendChild(n);m.appendChild(sb);
+    if(it.price){var p=document.createElement("div");p.className="pr";p.textContent=won(it.price);m.appendChild(p)}
+    d.appendChild(m);d.onclick=function(){openDlg(it)};g.appendChild(d);
+  });
+  $("empty").hidden=!(db&&items.length===0);
+  if(db){
+    var tot=items.reduce(function(a,it){return a+(Number(it.price)||0)},0);
+    $("count").textContent="총 "+items.length+"벌"+(tot?" · 구매액 "+won(tot):"")+(list.length!==items.length?" · "+list.length+"벌 표시":"");
+  }
+}
+$("q").oninput=render;
+
+function openDlg(it){
+  cur=it||null;imgData=null;
+  $("ttl").textContent=it?"옷 정보":"새 옷";
+  $("name").value=it?it.name||"":"";$("cat").value=it?it.category:(cat(filter)?filter:CATS[0].n);
+  syncSub(it?it.sub:subf);
+  $("season").value=it?it.season:SEASONS[0];$("price").value=it&&it.price?it.price:"";
+  $("color").value=it?it.color||"":"";$("size").value=it?it.size||"":"";
+  $("brand").value=it?it.brand||"":"";$("memo").value=it?it.memo||"":"";
+  $("favsw").checked=!!(it&&it.fav);
+  setPic(it&&it.img||null);
+  $("acts").hidden=!it;
+  var inf="";
+  if(it&&it.lastWorn)inf="마지막 착용 "+it.lastWorn;
+  if(it&&it.price&&it.worn)inf+=(inf?" · ":"")+"1회당 "+won(Math.round(it.price/it.worn));
+  $("info").textContent=inf;
+  $("save").disabled=false;$("dlg").showModal();$("dlg").scrollTop=0;
+}
+function setPic(src){
+  var p=$("pic");p.textContent="";
+  if(src){var im=document.createElement("img");im.src=src;im.alt="";p.appendChild(im)}else p.textContent="📷 사진 추가";
+}
+$("add").onclick=function(){if(!db){alert("저장소에 연결되지 않았어요. 로그인 상태를 확인해 주세요.");return}openDlg(null)};
+$("pic").onclick=function(){$("file").click()};
+$("cancel").onclick=function(){$("dlg").close()};
+(function(){
+  var nv=document.querySelector(".nav"),d=$("dlg"),y0=null,dy=0;
+  nv.addEventListener("touchstart",function(e){y0=e.touches[0].clientY;dy=0;d.style.transition="none"},{passive:true});
+  nv.addEventListener("touchmove",function(e){if(y0===null)return;dy=Math.max(0,e.touches[0].clientY-y0);d.style.transform="translateY("+dy+"px)"},{passive:true});
+  nv.addEventListener("touchend",function(){if(y0===null)return;y0=null;d.style.transition="transform .2s";d.style.transform="";if(dy>90)d.close()},{passive:true});
+  d.addEventListener("click",function(e){if(e.target===d)d.close()});
+})();
+
+function resize(file,max){
+  return new Promise(function(res,rej){
+    var u=URL.createObjectURL(file),im=new Image();
+    im.onload=function(){
+      var r=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement("canvas");
+      c.width=Math.round(im.width*r);c.height=Math.round(im.height*r);
+      c.getContext("2d").drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);
+      c.toBlob(function(b){b?res(b):rej(new Error("fail"))},"image/jpeg",0.82);
+    };
+    im.onerror=function(){rej(new Error("load"))};im.src=u;
+  });
+}
+function blobToDataUrl(b){return new Promise(function(res){var f=new FileReader();f.onload=function(){res(f.result)};f.readAsDataURL(b)})}
+$("file").onchange=async function(e){
+  var f=e.target.files[0];if(!f)return;
+  try{var b=await resize(f,1000);imgData=b;setPic(URL.createObjectURL(b))}
+  catch(x){$("info").textContent="사진을 불러오지 못했어요. 다른 사진으로 시도해 주세요."}
+  e.target.value="";
+};
+
+$("save").onclick=async function(){
+  if(!db)return;var btn=$("save");btn.disabled=true;$("info").textContent="저장 중…";
+  try{
+    var data={
+      name:$("name").value.trim(),category:$("cat").value,sub:$("sub").value,season:$("season").value,
+      price:Math.max(0,Number($("price").value)||0),color:$("color").value.trim(),size:$("size").value.trim(),
+      brand:$("brand").value.trim(),memo:$("memo").value.trim(),fav:$("favsw").checked
+    };
+    if(imgData){
+      if(assets){
+        var r=await assets.upload(imgData);data.img=r.url;data.imgId=r.id;
+        if(cur&&cur.imgId){try{await assets.delete(cur.imgId)}catch(e){}}
+      }else{
+        var small=await resize(imgData,500);data.img=await blobToDataUrl(small);data.imgId="";
+      }
+    }
+    if(cur){await col.doc(cur.id).update(data)}
+    else{
+      data.created=Date.now();data.worn=0;data.lastWorn="";
+      if(!data.img){data.img="";data.imgId=""}
+      await col.doc("c"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)).set(data);
+    }
+    $("dlg").close();
+  }catch(x){$("info").textContent="저장에 실패했어요. 잠시 후 다시 시도해 주세요.";btn.disabled=false}
+};
+$("wear").onclick=async function(){
+  if(!cur)return;var t=new Date().toISOString().slice(0,10);
+  try{await col.doc(cur.id).update({worn:(cur.worn||0)+1,lastWorn:t});$("dlg").close()}
+  catch(x){$("info").textContent="기록하지 못했어요."}
+};
+$("del").onclick=async function(){
+  if(!cur||!confirm("이 옷을 삭제할까요?"))return;
+  try{
+    await col.doc(cur.id).delete();
+    if(cur.imgId&&assets){try{await assets.delete(cur.imgId)}catch(e){}}
+    $("dlg").close();
+  }catch(x){$("info").textContent="삭제하지 못했어요."}
+};
+
+async function init(){
+  render();
+  var timer=setTimeout(function(){if(!db)$("count").textContent="저장소에 연결하지 못했어요. 새로고침해 주세요."},10000);
+  try{
+    if(window.claude&&claude.use){db=await claude.use("db");assets=await claude.use("assets")}
+  }catch(e){}
+  if(!db){$("count").textContent="저장소에 연결하지 못했어요. 로그인 상태를 확인해 주세요.";return}
+  clearTimeout(timer);
+  col=db.collection("closet");
+  col.onSnapshot(function(snap){
+    items=snap.docs.map(function(d){var v=d.data()||{};v.id=d.id;if(v.sub==="일반"||v.sub==="해당 없음")v.sub="";return v});
+    render();
+  },function(){$("count").textContent="데이터를 불러오지 못했어요."});
+}
+init();
+</script>
+</body>
+</html>
