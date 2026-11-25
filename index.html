@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
-<title>내 옷장 version 3.2</title>
+<title>내 옷장 version 4.0</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;700&display=swap">
@@ -138,7 +138,7 @@ select,option{font-family:inherit}
   <button class="lo" id="lo">로그아웃</button>
   <div class="hang"><svg viewBox="0 0 240 82" aria-hidden="true"><path d="M120 40V30C120 24 130 22 130 14A10 10 0 0 0 110 14" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M120 40L16 70Q10 72 12 77H228Q230 72 224 70Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg>
   <h1>내 옷장</h1></div>
-  <div class="stat"><div class="sub" id="count">불러오는 중…</div><span class="vr">version 3.2</span></div>
+  <div class="stat"><div class="sub" id="count">불러오는 중…</div><span class="vr">version 4.0</span></div>
 </header>
 <input class="search" id="q" placeholder="이름, 브랜드, 색상 검색" type="search">
 <div class="chips" id="chips"></div>
@@ -153,8 +153,8 @@ select,option{font-family:inherit}
 <dialog id="dlg">
   <div class="nav"><button class="tb" id="cancel">취소</button><div class="tt" id="ttl">새 옷</div><button class="tb b" id="save">저장</button></div>
   <div class="sheet">
-    <div class="pic" id="pic">📷 사진 추가</div>
-    <input type="file" id="file" accept="image/*" hidden>
+    <div class="pic" id="pic">🖼️ 갤러리에서 사진 선택</div>
+    <input type="file" id="file" accept="image/jpeg,image/png,image/webp" hidden>
     <div><label>이름</label><input class="f" id="name" placeholder="예: 네이비 울 블레이저"></div>
     <div class="row">
       <div><label>종류</label><div class="sel"><select class="f" id="cat" tabindex="-1"></select></div></div>
@@ -194,14 +194,13 @@ var firebaseConfig={
 };
 
 var CATS=[
- {n:"상의",e:"👔",s:["티셔츠","셔츠·블라우스","니트·스웨터","맨투맨·후드"]},
- {n:"하의",e:"👖",s:["청바지","슬랙스","반바지","치마"]},
+ {n:"상의",e:"👔",s:["티셔츠","셔츠","니트·스웨터","맨투맨·후드"]},
+ {n:"하의",e:"👖",s:["청바지","슬랙스","반바지"]},
  {n:"아우터",e:"🧥",s:["코트","재킷·블레이저","패딩","가디건"]},
- {n:"원피스",e:"👗",s:["캐주얼","정장·포멀","파티"]},
  {n:"운동복",e:"🏃",s:["러닝","테니스","헬스·요가","등산","골프","수영","구기·팀웨어","기타"]},
  {n:"신발",e:"👟",s:["스니커즈","구두","부츠","샌들·슬리퍼"]},
  {n:"가방",e:"👜",s:["백팩","크로스백","토트·숄더","클러치·파우치"]},
- {n:"액세서리",e:"💍",s:["시계","반지","목걸이","귀걸이","팔찌","모자","안경·선글라스","벨트","스카프·머플러","넥타이","장갑","양말","헤어","기타"]}
+ {n:"액세서리",e:"⌚",s:["시계","반지","모자","안경·선글라스","벨트","스카프·머플러","넥타이","장갑","양말","기타"]}
 ];
 var SUBE={"시계":"⌚","반지":"💍","목걸이":"📿","귀걸이":"✨","팔찌":"🔗","모자":"🧢","안경·선글라스":"🕶️","벨트":"🪢","스카프·머플러":"🧣","넥타이":"👔","장갑":"🧤","양말":"🧦","헤어":"🎀","러닝":"🏃","테니스":"🎾","헬스·요가":"🧘","등산":"🥾","골프":"⛳","수영":"🏊","구기·팀웨어":"⚽"};
 var SEASONS=["사계절","봄·가을","여름","겨울"];
@@ -288,7 +287,7 @@ $("q").oninput=render;
 function openDlg(it){
   cur=it||null;imgData=null;
   $("ttl").textContent=it?"옷 정보":"새 옷";
-  $("name").value=it?it.name||"":"";$("cat").value=it?it.category:(cat(filter)?filter:CATS[0].n);
+  $("name").value=it?it.name||"":"";$("cat").value=it&&cat(it.category)?it.category:(!it&&cat(filter)?filter:CATS[0].n);
   syncSub(it?it.sub:subf);
   $("season").value=it?it.season:SEASONS[0];$("price").value=it&&it.price?it.price:"";
   $("color").value=it?it.color||"":"";$("size").value=it?it.size||"":"";
@@ -304,7 +303,7 @@ function openDlg(it){
 }
 function setPic(src){
   var p=$("pic");p.textContent="";
-  if(src){var im=document.createElement("img");im.src=src;im.alt="";p.appendChild(im)}else p.textContent="📷 사진 추가";
+  if(src){var im=document.createElement("img");im.src=src;im.alt="";p.appendChild(im)}else p.textContent="🖼️ 갤러리에서 사진 선택";
 }
 $("add").onclick=function(){if(!db){alert("저장소에 연결되지 않았어요. 로그인 상태를 확인해 주세요.");return}openDlg(null)};
 $("pic").onclick=function(){$("file").click()};
