@@ -17,7 +17,7 @@ html{background:var(--bg)}
 body::before{content:"";position:fixed;inset:env(safe-area-inset-top,0px) 0 0 0;z-index:-1;pointer-events:none;background-image:radial-gradient(rgba(176,141,74,.55) 1.6px,transparent 2px);background-size:18px 18px}
 body{margin:0;background:transparent;color:var(--ink);font-family:Jua,"Noto Sans KR",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;font-synthesis:none;max-width:720px;margin-inline:auto;padding:18px 16px 100px}
 input,select,textarea,button{font:inherit;color:inherit}
-header{text-align:center;margin:-18px -16px 14px;padding:28px 16px 14px;background:var(--bg);border-bottom:3px double var(--gold)}
+header{position:relative;text-align:center;margin:-18px -16px 14px;padding:28px 16px 14px;background:var(--bg);border-bottom:3px double var(--gold)}
 .hang{width:150px;margin:0 auto}
 .hang svg{display:block;width:100%;height:auto;color:var(--gold)}
 h1{margin:2px 0 4px;padding-left:.18em;font-size:26px;letter-spacing:.18em;font-weight:700;white-space:nowrap}
@@ -112,6 +112,10 @@ select,option{font-family:inherit}
 .lt{font-size:28px;letter-spacing:.12em;margin-bottom:8px}
 .ls{color:var(--sub);font-size:15px;margin:8px 0}
 #gbtn{width:100%;margin-top:12px;padding:14px;border:1px solid var(--gold);border-radius:4px;background:var(--accent);color:var(--accent-ink);font-size:17px;cursor:pointer}
+.lh{width:110px;color:var(--gold);display:block;margin:0 auto 6px}
+#pw{width:100%;margin-top:8px;padding:13px 14px;border:1px solid var(--line);border-radius:4px;background:var(--bg);font-size:18px;text-align:center;letter-spacing:.2em;outline:0}
+#gbtn:disabled{opacity:.5}
+.lo{position:absolute;top:10px;right:14px;border:0;background:none;color:var(--sub);font-size:14px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -119,6 +123,7 @@ select,option{font-family:inherit}
 <symbol id="hg" viewBox="0 0 64 64"><path d="M32 14a5 5 0 1 1 5 5c-3 1-5 2-5 5v3M32 27L6 44a3 3 0 0 0 2 5h48a3 3 0 0 0 2-5z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 </defs></svg>
 <header>
+  <button class="lo" id="lo">로그아웃</button>
   <div class="hang"><svg viewBox="0 0 240 82" aria-hidden="true"><path d="M120 40V30C120 24 130 22 130 14A10 10 0 0 0 110 14" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M120 40L16 70Q10 72 12 77H228Q230 72 224 70Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg>
   <h1>내 옷장</h1></div>
   <div class="stat"><div class="sub" id="count">불러오는 중…</div><span class="vr">version 3.2</span></div>
@@ -159,14 +164,17 @@ select,option{font-family:inherit}
   </div>
 </dialog>
 
-<div id="login" hidden><div class="lbox"><div class="lt">내 옷장</div><div class="ls">허용된 Google 계정으로 로그인해 주세요.</div><button id="gbtn">Google로 로그인</button><div class="ls" id="lmsg"></div></div></div>
+<div id="login" hidden><div class="lbox"><svg class="lh" viewBox="0 0 240 82" aria-hidden="true"><path d="M120 40V30C120 24 130 22 130 14A10 10 0 0 0 110 14" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M120 40L16 70Q10 72 12 77H228Q230 72 224 70Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg><div class="lt">내 옷장</div><div class="ls">암호를 입력해 주세요</div><input id="pw" type="password" placeholder="암호" autocomplete="current-password"><button id="gbtn">로그인</button><div class="ls" id="lmsg"></div></div></div>
 <dialog id="pk"><div class="pkh" id="pkt"></div><div id="pkl"></div></dialog>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import {getFirestore,collection,doc,setDoc,updateDoc,deleteDoc,onSnapshot} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-import {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
 // Firebase 웹 앱 설정값 (공개되어도 되는 값이에요. 보안은 Firestore 규칙이 담당해요)
+// 암호 로그인에 쓰는 내부 이메일 (Firebase 사용자 추가 때 이 이메일로 만들고, firestore.rules에도 똑같이 적어요)
+var LOGIN_EMAIL="closet@example.com";
+
 var firebaseConfig={
   apiKey:"AIzaSyB9HL6nS3b8IJqlZYiTSN7LOk9lw9dovD4",
   authDomain:"closet-59ef6.firebaseapp.com",
@@ -369,18 +377,27 @@ async function init(){
     set:function(d){return setDoc(r,d)},
     update:function(d){return updateDoc(r,d)},
     delete:function(){return deleteDoc(r)}}}};
-  $("gbtn").onclick=function(){
-    $("lmsg").textContent="";
-    signInWithPopup(auth,new GoogleAuthProvider()).catch(function(){$("lmsg").textContent="로그인하지 못했어요. 다시 시도해 주세요."});
-  };
+  function doLogin(){
+    var pw=$("pw").value;
+    if(!pw){$("lmsg").textContent="암호를 입력해 주세요.";return}
+    $("gbtn").disabled=true;$("lmsg").textContent="";
+    signInWithEmailAndPassword(auth,LOGIN_EMAIL,pw).catch(function(e){
+      var c=(e&&e.code)||"";
+      $("lmsg").textContent=/invalid|wrong|user-not-found/.test(c)?"암호가 맞지 않아요.":c.indexOf("too-many")>=0?"잠시 후 다시 시도해 주세요.":c.indexOf("network")>=0?"네트워크를 확인해 주세요.":"로그인하지 못했어요. ("+c+")";
+      $("pw").value="";
+    }).then(function(){$("gbtn").disabled=false});
+  }
+  $("gbtn").onclick=doLogin;
+  $("pw").onkeydown=function(e){if(e.key==="Enter")doLogin()};
+  $("lo").onclick=function(){signOut(auth)};
   onAuthStateChanged(auth,function(u){
     if(unsub){unsub();unsub=null}
     if(!u){db=null;items=[];$("login").hidden=false;render();$("count").textContent="로그인이 필요해요.";return}
-    $("login").hidden=true;db=true;
+    $("login").hidden=true;$("pw").value="";db=true;
     unsub=onSnapshot(colRef,function(snap){
       items=snap.docs.map(function(d){var v=d.data()||{};v.id=d.id;if(v.sub==="일반"||v.sub==="해당 없음")v.sub="";return v});
       render();
-    },function(){$("count").textContent="데이터를 불러오지 못했어요. 허용된 계정으로 로그인했는지 확인해 주세요."});
+    },function(){$("count").textContent="데이터를 불러오지 못했어요. 규칙과 로그인 이메일이 같은지 확인해 주세요."});
   });
 }
 init();
