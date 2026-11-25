@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
-<title>내 옷장 version 4.2</title>
+<title>내 옷장 version 5.0</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;700&display=swap">
@@ -128,6 +128,17 @@ select,option{font-family:inherit}
 .sp input{margin-right:6px}
 #gbtn:disabled{opacity:.5}
 .lo{position:absolute;top:10px;right:14px;border:0;background:none;color:var(--sub);font-size:14px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.rec{display:block;width:100%;margin:0 0 12px;padding:14px;border:1px solid var(--gold);border-radius:4px;background:var(--card);color:var(--accent);font-size:17px;cursor:pointer;transition:transform .12s}
+.rec:active{transform:scale(.98)}
+.oc{background:var(--card);border:1px solid var(--line);border-radius:4px;box-shadow:0 1px 0 var(--gold);overflow:hidden}
+.oh{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);font-size:16px}
+.oc2{color:var(--gold);font-size:14px}
+.og{display:grid;gap:2px;background:var(--line)}
+.ot{position:relative;aspect-ratio:1/1;background:var(--chip);display:flex;align-items:center;justify-content:center;font-size:38px;overflow:hidden}
+.ot.wide{aspect-ratio:auto}
+.ot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ol{position:absolute;left:0;right:0;bottom:0;padding:3px 6px;font-size:12px;line-height:1.3;background:rgba(0,0,0,.55);color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rcempty{text-align:center;color:var(--sub);padding:30px 12px;line-height:1.8;white-space:pre-line;font-size:16px}
 </style>
 </head>
 <body>
@@ -138,8 +149,9 @@ select,option{font-family:inherit}
   <button class="lo" id="lo">로그아웃</button>
   <div class="hang"><svg viewBox="0 0 240 82" aria-hidden="true"><path d="M120 40V30C120 24 130 22 130 14A10 10 0 0 0 110 14" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M120 40L16 70Q10 72 12 77H228Q230 72 224 70Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg>
   <h1>내 옷장</h1></div>
-  <div class="stat"><div class="sub" id="count">불러오는 중…</div><span class="vr">version 4.2</span></div>
+  <div class="stat"><div class="sub" id="count">불러오는 중…</div><span class="vr">version 5.0</span></div>
 </header>
+<button class="rec" id="rec">✨ 내일 코디 추천받기</button>
 <input class="search" id="q" placeholder="이름, 브랜드, 색상 검색" type="search">
 <div class="chips" id="chips"></div>
 <div class="chips s" id="subchips" hidden></div>
@@ -177,6 +189,7 @@ select,option{font-family:inherit}
 </dialog>
 
 <div id="login" hidden><div class="lbox"><svg class="lh" viewBox="0 0 240 82" aria-hidden="true"><path d="M120 40V30C120 24 130 22 130 14A10 10 0 0 0 110 14" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M120 40L16 70Q10 72 12 77H228Q230 72 224 70Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg><div class="lt">내 옷장</div><div class="ls">이메일과 암호를 입력해 주세요</div><input id="em" type="email" placeholder="이메일" autocomplete="username" inputmode="email" autocapitalize="off" spellcheck="false"><input id="pw" type="password" placeholder="암호" autocomplete="current-password"><label class="sp"><input type="checkbox" id="sp"> 암호 보기</label><button id="gbtn">로그인</button><div class="ls" id="lmsg"></div></div></div>
+<dialog id="rc"><div class="nav"><button class="tb" id="rc-x">닫기</button><div class="tt">내일 코디 추천</div><button class="tb b" id="rc-re">다시 추천</button></div><div class="sheet" id="rcb"></div></dialog>
 <dialog id="pk"><div class="pkh" id="pkt"></div><div id="pkl"></div></dialog>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
@@ -374,6 +387,114 @@ $("del").onclick=async function(){
     $("dlg").close();
   }catch(x){$("info").textContent="삭제하지 못했어요."}
 };
+
+/* ===== 내일 코디 추천 ===== */
+var wx=null,wxTried=false;
+var NEUTRAL=["검정","블랙","black","흰","화이트","white","아이보리","회색","그레이","gray","grey","베이지","네이비","navy","카키","브라운","갈색","차콤","데님","청"];
+function isNeutral(c){c=(c||"").toLowerCase();return !c||NEUTRAL.some(function(n){return c.indexOf(n)>=0})}
+function colorFit(a,b){
+  var s=0,x=(a.color||"").trim().toLowerCase(),y=(b.color||"").trim().toLowerCase();
+  if(isNeutral(a.color)||isNeutral(b.color))s+=1;
+  if(x&&x===y&&!isNeutral(a.color))s-=1.5;
+  return s;
+}
+function tomorrow(){return new Date(Date.now()+864e5)}
+function seasonFor(){
+  if(wx){return wx.tmax>=26?"여름":wx.tmax<=12?"겨울":"봄·가을"}
+  var m=tomorrow().getMonth()+1;
+  return (m===12||m<=2)?"겨울":(m>=6&&m<=8)?"여름":"봄·가을";
+}
+function needOuter(se){
+  if(wx)return wx.tmax<=19||wx.tmin<=12;
+  return se==="겨울"||(se==="봄·가을"&&Math.random()<.6);
+}
+function okSeason(it,se){return !it.season||it.season==="사계절"||it.season===se}
+function pool(cn,se){
+  var all=items.filter(function(i){return i.category===cn});
+  var f=all.filter(function(i){return okSeason(i,se)});
+  return f.length?f:all;
+}
+function score(it){
+  var today=new Date().toISOString().slice(0,10);
+  return Math.random()*1.2-(it.worn||0)*0.04-(it.lastWorn===today?2:0)+(it.fav?0.3:0);
+}
+function best(list,used,extra){
+  var c=list.filter(function(i){return !used[i.id]});if(!c.length)c=list;
+  var b=null,bs=-1e9;
+  c.forEach(function(i){var v=score(i)+(extra?extra(i):0);if(v>bs){bs=v;b=i}});
+  return b;
+}
+function buildOutfits(){
+  var se=seasonFor(),used={},res=[],tops=pool("상의",se),bots=pool("하의",se);
+  if(!tops.length||!bots.length)return null;
+  for(var k=0;k<3;k++){
+    var t=best(tops,used);used[t.id]=1;
+    var b=best(bots,used,function(i){return colorFit(t,i)});used[b.id]=1;
+    var o=[t,b];
+    if(needOuter(se)){
+      var ow=pool("아우터",se);
+      if(ow.length){var a=best(ow,used,function(i){return colorFit(t,i)*.5});used[a.id]=1;o.unshift(a)}
+    }
+    var sh=pool("신발",se);if(sh.length){var s2=best(sh,used);used[s2.id]=1;o.push(s2)}
+    var bg=pool("가방",se);if(bg.length&&Math.random()<.5){var g=best(bg,used);used[g.id]=1;o.push(g)}
+    var ac=pool("액세서리",se);if(ac.length&&Math.random()<.7){var c=best(ac,used);used[c.id]=1;o.push(c)}
+    var key=o.map(function(i){return i.id}).sort().join("|");
+    if(!res.some(function(r){return r.key===key}))res.push({key:key,items:o,t:t,b:b});
+  }
+  return res;
+}
+async function getWx(){
+  var lat=37.5665,lon=126.978,place="서울 기준";
+  try{
+    var p=await new Promise(function(res,rej){if(!navigator.geolocation)return rej();navigator.geolocation.getCurrentPosition(res,rej,{timeout:6000,maximumAge:600000})});
+    lat=p.coords.latitude;lon=p.coords.longitude;place="내 위치";
+  }catch(e){}
+  try{
+    var ctl=new AbortController(),tm=setTimeout(function(){ctl.abort()},8000);
+    var r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat.toFixed(3)+"&longitude="+lon.toFixed(3)+"&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=2",{signal:ctl.signal});
+    clearTimeout(tm);
+    var j=await r.json(),d=j.daily;
+    return {tmax:d.temperature_2m_max[1],tmin:d.temperature_2m_min[1],rain:d.precipitation_probability_max[1],place:place};
+  }catch(e){return null}
+}
+function hh(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e}
+function renderRec(){
+  var body=$("rcb");body.textContent="";
+  var d=tomorrow(),lab=(d.getMonth()+1)+"월 "+d.getDate()+"일 ("+"일월화수목금토".charAt(d.getDay())+")",se=seasonFor();
+  body.appendChild(hh("div","info",wx
+    ?"내일 "+lab+" · "+wx.place+" 최저 "+Math.round(wx.tmin)+"° / 최고 "+Math.round(wx.tmax)+"°"+(wx.rain>=50?" · 비 올 확률 "+wx.rain+"% ☂️":"")
+    :"내일 "+lab+" · "+se+" 시즌 기준 (날씨는 불러오지 못했어요)"));
+  var outs=buildOutfits();
+  if(!outs){body.appendChild(hh("div","rcempty","코디를 만들려면 상의와 하의가 각각 1벌 이상 필요해요.\n먼저 옷을 등록해 주세요 👔"));return}
+  outs.forEach(function(o,idx){
+    var card=hh("div","oc"),hd=hh("div","oh");
+    hd.appendChild(hh("span","","코디 "+(idx+1)));
+    hd.appendChild(hh("span","oc2",[o.t.color,o.b.color].filter(Boolean).join(" + ")));
+    card.appendChild(hd);
+    var n=o.items.length,cols=n<=2?2:n===3?3:n===4?2:3,g=hh("div","og");
+    g.style.gridTemplateColumns="repeat("+cols+",1fr)";
+    o.items.forEach(function(it,i){
+      var t=hh("div","ot");
+      if(it.img){var im=document.createElement("img");im.src=it.img;im.alt="";t.appendChild(im)}else t.appendChild(document.createTextNode(emo(it)));
+      t.appendChild(hh("div","ol",it.name||it.category));
+      if(i===n-1&&n%cols){t.style.gridColumn="span "+(cols-(n%cols)+1);t.className="ot wide"}
+      g.appendChild(t);
+    });
+    card.appendChild(g);body.appendChild(card);
+  });
+  if(outs.length<3)body.appendChild(hh("div","info","옷을 더 등록하면 더 다양한 코디를 추천해 드려요."));
+}
+async function openRec(){
+  $("rcb").textContent="내일 코디를 고르는 중…";
+  $("rc").showModal();
+  if(!wxTried){wxTried=true;wx=await getWx()}
+  renderRec();
+}
+$("rec").onclick=openRec;
+$("rc-x").onclick=function(){$("rc").close()};
+$("rc-re").onclick=function(){renderRec()};
+$("rc").addEventListener("click",function(e){if(e.target===$("rc"))$("rc").close()});
+/* ===== /내일 코디 추천 ===== */
 
 async function init(){
   render();
