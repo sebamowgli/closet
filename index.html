@@ -192,19 +192,20 @@ dialog{border-radius:var(--drad,8px) var(--drad,8px) 0 0}
 .tmhint{color:var(--sub);font-size:15px;padding:18px 6px;line-height:1.6}
 .tmb{display:block;width:100%;padding:13px;border:1px solid var(--gold);background:var(--card);color:var(--accent);font-size:17px;cursor:pointer}
 .lnk{border:0;background:none;color:var(--accent);font-size:14px;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:0 0 0 8px}
-:root[data-th="tailor"] body::before{background-image:repeating-linear-gradient(90deg,var(--pat) 0 1px,transparent 1px 16px);background-size:auto}
+:root[data-th="tailor"] body::before{background-image:linear-gradient(var(--pat) 1px,transparent 1px),linear-gradient(90deg,var(--pat) 1px,transparent 1px);background-size:32px 32px}
 :root[data-th="tailor"] header{border-bottom:0;padding-bottom:24px}
 :root[data-th="tailor"] header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:12px;background:repeating-linear-gradient(90deg,var(--gold) 0 1.5px,transparent 1.5px 10px) 0 0/100% 7px no-repeat,linear-gradient(var(--gold),var(--gold)) 0 100%/100% 2px no-repeat}
-:root[data-th="tailor"] .item,:root[data-th="tailor"] .tmc{outline:1.5px dashed var(--gold);outline-offset:-6px;box-shadow:0 4px 12px rgba(60,20,30,.08)}
+:root[data-th="tailor"] .item,:root[data-th="tailor"] .tmc{border-color:var(--ink);outline:1.5px dashed var(--gold);outline-offset:-6px;box-shadow:4px 4px 0 var(--chip)}
 :root[data-th="tailor"] dialog{outline:1.5px dashed var(--gold);outline-offset:-7px}
 .chip{border-style:dashed}
 .chip.on{border-style:solid;outline:1px dashed var(--accent-ink);outline-offset:-4px}
 .fab,.tmb{outline:1.5px dashed var(--gold);outline-offset:-5px}
-.fab{outline-color:rgba(246,230,208,.65)}
+.fab{outline-color:rgba(233,217,168,.65)}
 .tmch{border-bottom:1.5px dashed var(--gold)}
 .cd{border-top:1.5px dashed var(--gold)}
 .meta{border-top:1.5px dashed var(--line)}
 .nav{border-bottom:1.5px dashed var(--gold)}
+:root[data-th="tailor"] h1{letter-spacing:.22em}
 </style>
 </head>
 <body>
@@ -665,9 +666,9 @@ $("tmb").onclick=function(){
 var THEMES={
   tailor:{
     k:{orn:"✂ ┈┈┈ 🧵 ┈┈┈ ✂",empty:"🧵",sn:"✂️",si:"📏",pk:"✂",tm:"🧵"},
-    x:{rad:"14px",drad:"22px",hfont:'"Gowun Batang",serif'},
-    l:{bg:"#f7f0ea",card:"#fffaf5",ink:"#2a1a1c",sub:"#8a7478",line:"#e3d3c8",accent:"#6d1f30","accent-ink":"#f6e6d0",gold:"#a47a4e",chip:"#efe2d8",pat:"rgba(109,31,48,.10)"},
-    d:{bg:"#1a1013",card:"#25171b",ink:"#f1e4dc",sub:"#aa8f95",line:"#3d2a30",accent:"#d9a98a","accent-ink":"#1a1013",gold:"#d9a98a",chip:"#2f1f25",pat:"rgba(217,169,138,.10)"}}
+    x:{rad:"6px",drad:"12px",hfont:'"Noto Sans KR",sans-serif'},
+    l:{bg:"#efede8",card:"#fbfaf7",ink:"#16161a",sub:"#77746c",line:"#d8d4ca",accent:"#1c1c1f","accent-ink":"#e9d9a8",gold:"#9a7b2f",chip:"#e5e1d6",pat:"rgba(22,22,26,.07)"},
+    d:{bg:"#0d0d0f",card:"#17171a",ink:"#efe9d8",sub:"#9a968a",line:"#2c2c30",accent:"#d1b161","accent-ink":"#0d0d0f",gold:"#d1b161",chip:"#202024",pat:"rgba(239,233,216,.07)"}}
 };
 var th="tailor";
 var TOKENS=["bg","card","ink","sub","line","accent","accent-ink","gold","chip","pat","rad","drad","hfont"];

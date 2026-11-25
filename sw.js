@@ -1,5 +1,5 @@
 // 내 옷장 서비스워커: 앱 화면을 기기에 저장해서 홈 화면 앱처럼 빠르게 열려요.
-const CACHE = "closet-v8";
+const CACHE = "closet-v9";
 const SHELL = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 
 self.addEventListener("install", (e) => {
