@@ -106,6 +106,12 @@ select,option{font-family:inherit}
 .pko{display:flex;justify-content:space-between;align-items:center;width:100%;border:0;border-bottom:1px solid var(--line);background:transparent;padding:15px 20px;font-size:18px;cursor:pointer;text-align:left}
 .pko:active{background:var(--chip)}
 .pko.on{color:var(--accent)}
+#login{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px}
+#login[hidden]{display:none}
+.lbox{background:var(--card);border:1px solid var(--gold);border-radius:6px;padding:28px 24px;text-align:center;max-width:340px;width:100%}
+.lt{font-size:28px;letter-spacing:.12em;margin-bottom:8px}
+.ls{color:var(--sub);font-size:15px;margin:8px 0}
+#gbtn{width:100%;margin-top:12px;padding:14px;border:1px solid var(--gold);border-radius:4px;background:var(--accent);color:var(--accent-ink);font-size:17px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -153,8 +159,23 @@ select,option{font-family:inherit}
   </div>
 </dialog>
 
+<div id="login" hidden><div class="lbox"><div class="lt">내 옷장</div><div class="ls">허용된 Google 계정으로 로그인해 주세요.</div><button id="gbtn">Google로 로그인</button><div class="ls" id="lmsg"></div></div></div>
 <dialog id="pk"><div class="pkh" id="pkt"></div><div id="pkl"></div></dialog>
-<script>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {getFirestore,collection,doc,setDoc,updateDoc,deleteDoc,onSnapshot} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+// Firebase 웹 앱 설정값 (공개되어도 되는 값이에요. 보안은 Firestore 규칙이 담당해요)
+var firebaseConfig={
+  apiKey:"AIzaSyB9HL6nS3b8IJqlZYiTSN7LOk9lw9dovD4",
+  authDomain:"closet-59ef6.firebaseapp.com",
+  projectId:"closet-59ef6",
+  storageBucket:"closet-59ef6.firebasestorage.app",
+  messagingSenderId:"382741184526",
+  appId:"1:382741184526:web:4858ab20ba6dbd7ed17c5f"
+};
+
 var CATS=[
  {n:"상의",e:"👔",s:["티셔츠","셔츠·블라우스","니트·스웨터","맨투맨·후드"]},
  {n:"하의",e:"👖",s:["청바지","슬랙스","반바지","치마"]},
@@ -340,17 +361,27 @@ $("del").onclick=async function(){
 
 async function init(){
   render();
-  var timer=setTimeout(function(){if(!db)$("count").textContent="저장소에 연결하지 못했어요. 새로고침해 주세요."},10000);
-  try{
-    if(window.claude&&claude.use){db=await claude.use("db");assets=await claude.use("assets")}
-  }catch(e){}
-  if(!db){$("count").textContent="저장소에 연결하지 못했어요. 로그인 상태를 확인해 주세요.";return}
-  clearTimeout(timer);
-  col=db.collection("closet");
-  col.onSnapshot(function(snap){
-    items=snap.docs.map(function(d){var v=d.data()||{};v.id=d.id;if(v.sub==="일반"||v.sub==="해당 없음")v.sub="";return v});
-    render();
-  },function(){$("count").textContent="데이터를 불러오지 못했어요."});
+  if(!firebaseConfig.apiKey||firebaseConfig.apiKey.indexOf("여기에")===0){
+    $("count").textContent="index.html 위쪽의 firebaseConfig를 먼저 입력해 주세요.";return;
+  }
+  var app=initializeApp(firebaseConfig),fdb=getFirestore(app),auth=getAuth(app),colRef=collection(fdb,"closet"),unsub=null;
+  col={doc:function(id){var r=doc(fdb,"closet",id);return{
+    set:function(d){return setDoc(r,d)},
+    update:function(d){return updateDoc(r,d)},
+    delete:function(){return deleteDoc(r)}}}};
+  $("gbtn").onclick=function(){
+    $("lmsg").textContent="";
+    signInWithPopup(auth,new GoogleAuthProvider()).catch(function(){$("lmsg").textContent="로그인하지 못했어요. 다시 시도해 주세요."});
+  };
+  onAuthStateChanged(auth,function(u){
+    if(unsub){unsub();unsub=null}
+    if(!u){db=null;items=[];$("login").hidden=false;render();$("count").textContent="로그인이 필요해요.";return}
+    $("login").hidden=true;db=true;
+    unsub=onSnapshot(colRef,function(snap){
+      items=snap.docs.map(function(d){var v=d.data()||{};v.id=d.id;if(v.sub==="일반"||v.sub==="해당 없음")v.sub="";return v});
+      render();
+    },function(){$("count").textContent="데이터를 불러오지 못했어요. 허용된 계정으로 로그인했는지 확인해 주세요."});
+  });
 }
 init();
 </script>
