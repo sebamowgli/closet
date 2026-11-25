@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
-<title>내 옷장 version 5.0</title>
+<title>내 옷장 version 5.1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;700&display=swap">
@@ -23,7 +23,7 @@ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:en
 :root[data-theme="dark"]{--bg:#15171a;--card:#1e2125;--ink:#ece4d3;--sub:#9a937f;--line:#33363a;--accent:#dcb96f;--accent-ink:#15171a;--gold:#c9a45c;--chip:#272a2e;color-scheme:dark}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{background:var(--bg)}
-body::before{content:"";position:fixed;inset:env(safe-area-inset-top,0px) 0 0 0;z-index:-1;pointer-events:none;background-image:radial-gradient(rgba(176,141,74,.55) 1.6px,transparent 2px);background-size:18px 18px}
+body::before{content:"";position:fixed;inset:env(safe-area-inset-top,0px) 0 0 0;z-index:-1;pointer-events:none;background-image:radial-gradient(var(--dot,rgba(176,141,74,.55)) 1.6px,transparent 2px);background-size:18px 18px}
 body{margin:0;background:transparent;color:var(--ink);font-family:Jua,"Noto Sans KR",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;font-synthesis:none;max-width:720px;margin-inline:auto;padding:18px 16px 100px}
 input,select,textarea,button{font:inherit;color:inherit}
 header{position:relative;text-align:center;margin:-18px -16px 14px;padding:28px 16px 14px;background:var(--bg);border-bottom:3px double var(--gold)}
@@ -56,7 +56,7 @@ h1{margin:2px 0 4px;padding-left:.18em;font-size:26px;letter-spacing:.18em;font-
 .star{position:absolute;top:8px;right:8px;background:var(--accent);color:var(--gold);border-radius:3px;padding:2px 7px;font-size:13px;z-index:1}
 .tag{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.55);color:#fff;border-radius:3px;padding:2px 7px;font-size:12px;z-index:1}
 .empty{text-align:center;color:var(--sub);padding:40px 12px;line-height:1.8}
-.empty svg{width:200px;color:var(--gold);margin-bottom:8px}
+.empty svg{width:270px;max-width:90%;color:var(--gold);margin-bottom:8px}
 .fab{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--accent);color:var(--accent-ink);border:1px solid var(--gold);border-radius:4px;padding:14px 22px;font-weight:700;letter-spacing:.06em;box-shadow:0 6px 18px rgba(0,0,0,.28);cursor:pointer;transition:transform .12s}
 dialog{border:1px solid var(--gold);border-bottom:0;border-radius:8px 8px 0 0;background:var(--card);color:var(--ink);width:100%;max-width:560px;max-height:94vh;margin:auto auto 0;padding:0;overflow:auto}
 dialog[open]{animation:up .3s cubic-bezier(.2,.8,.2,1)}
@@ -139,25 +139,63 @@ select,option{font-family:inherit}
 .ot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .ol{position:absolute;left:0;right:0;bottom:0;padding:3px 6px;font-size:12px;line-height:1.3;background:rgba(0,0,0,.55);color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rcempty{text-align:center;color:var(--sub);padding:30px 12px;line-height:1.8;white-space:pre-line;font-size:16px}
+.thp{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:0 0 10px;font-size:15px;color:var(--sub)}
+.thp button{border:0;background:none;color:var(--sub);font-size:15px;padding:4px 9px;border-radius:3px;cursor:pointer}
+.thp button.on{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+h1{font-size:32px}
+.sub{font-size:16px}
+.vr{font-size:15px}
+.search{font-size:18px}
+.chip{font-size:16px}
+.chips.s .chip{font-size:15px}
+.n{font-size:17px}
+.s{font-size:15px}
+.pr{font-size:15px}
+.star{font-size:16px}
+.tag{font-size:15px}
+.empty{font-size:17px}
+.fab{font-size:18px}
+.tt{font-size:19px}
+.tb{font-size:19px}
+.pic{font-size:17px}
+label{font-size:15px}
+.f{font-size:18px}
+.fr span{font-size:17px}
+.btn{font-size:18px}
+.info{font-size:15px}
+.pkh{font-size:16px}
+.pko{font-size:19px}
+.rec{font-size:18px}
+.oh{font-size:17px}
+.oc2{font-size:15px}
+.ol{font-size:13px}
+.lt{font-size:30px}
+.ls{font-size:16px}
+#pw{font-size:19px}
+#em{font-size:18px}
+.lo{font-size:15px}
+.sp{font-size:15px}
 </style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
 <symbol id="hg" viewBox="0 0 64 64"><path d="M32 14a5 5 0 1 1 5 5c-3 1-5 2-5 5v3M32 27L6 44a3 3 0 0 0 2 5h48a3 3 0 0 0 2-5z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="hg2" viewBox="0 0 240 82"><path d="M120 40V30C120 24 130 22 130 14A10 10 0 0 0 110 14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><path d="M120 40L16 70Q10 72 12 77H228Q230 72 224 70Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></symbol>
 </defs></svg>
 <header>
   <button class="lo" id="lo">로그아웃</button>
   <div class="hang"><svg viewBox="0 0 240 82" aria-hidden="true"><path d="M120 40V30C120 24 130 22 130 14A10 10 0 0 0 110 14" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M120 40L16 70Q10 72 12 77H228Q230 72 224 70Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg>
   <h1>내 옷장</h1></div>
-  <div class="stat"><div class="sub" id="count">불러오는 중…</div><span class="vr">version 5.0</span></div>
+  <div class="stat"><div class="sub" id="count">불러오는 중…</div><span class="vr">version 5.1</span></div>
 </header>
+<div class="thp" id="thp"></div>
 <button class="rec" id="rec">✨ 내일 코디 추천받기</button>
 <input class="search" id="q" placeholder="이름, 브랜드, 색상 검색" type="search">
 <div class="chips" id="chips"></div>
 <div class="chips s" id="subchips" hidden></div>
 <div class="grid" id="grid"></div>
 <div class="empty" id="empty" hidden>
-  <svg viewBox="0 0 200 70" aria-hidden="true"><path d="M4 10h192" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><use href="#hg" x="14" y="6" width="50" height="50"/><use href="#hg" x="75" y="6" width="50" height="50"/><use href="#hg" x="136" y="6" width="50" height="50"/></svg><br>
+  <svg viewBox="0 0 300 46" aria-hidden="true"><path d="M6 10H294" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke"/><use href="#hg2" x="16" y="5" width="84" height="29"/><use href="#hg2" x="108" y="5" width="84" height="29"/><use href="#hg2" x="200" y="5" width="84" height="29"/></svg><br>
   옷장이 비어 있어요.<br>아래 버튼으로 첫 옷을 등록해 보세요. 👔
 </div>
 <button class="fab" id="add">+ 등록</button>
@@ -387,6 +425,40 @@ $("del").onclick=async function(){
     $("dlg").close();
   }catch(x){$("info").textContent="삭제하지 못했어요."}
 };
+
+/* ===== 배색 ===== */
+var THEMES={
+  base:{s:"기존"},
+  navy:{s:"네이비",
+    l:{bg:"#f4f1ea",card:"#fffdf8",ink:"#1a2238",sub:"#6b7080",line:"#dcd6c6",accent:"#1b2a4a","accent-ink":"#f4ead2",gold:"#a8863f",chip:"#ebe6d8",dot:"rgba(168,134,63,.5)"},
+    d:{bg:"#0f1626",card:"#172036",ink:"#ece6d6",sub:"#9aa3b8",line:"#2a3550",accent:"#d4b673","accent-ink":"#0f1626",gold:"#d4b673",chip:"#1e2a45",dot:"rgba(212,182,115,.35)"}},
+  wine:{s:"와인",
+    l:{bg:"#f7f0ea",card:"#fffaf5",ink:"#2a1a1c",sub:"#8a7478",line:"#e3d3c8",accent:"#6d1f30","accent-ink":"#f6e6d0",gold:"#a47a4e",chip:"#efe2d8",dot:"rgba(164,122,78,.5)"},
+    d:{bg:"#1a1013",card:"#25171b",ink:"#f1e4dc",sub:"#aa8f95",line:"#3d2a30",accent:"#d9a98a","accent-ink":"#1a1013",gold:"#d9a98a",chip:"#2f1f25",dot:"rgba(217,169,138,.35)"}},
+  noir:{s:"블랙",
+    l:{bg:"#efede8",card:"#fbfaf7",ink:"#16161a",sub:"#77746c",line:"#d8d4ca",accent:"#1c1c1f","accent-ink":"#e9d9a8",gold:"#9a7b2f",chip:"#e5e1d6",dot:"rgba(154,123,47,.5)"},
+    d:{bg:"#0d0d0f",card:"#17171a",ink:"#efe9d8",sub:"#9a968a",line:"#2c2c30",accent:"#d1b161","accent-ink":"#0d0d0f",gold:"#d1b161",chip:"#202024",dot:"rgba(209,177,97,.35)"}}
+};
+var TH_KEYS=["base","navy","wine","noir"],th="navy";
+function applyTheme(){
+  var r=document.documentElement,t=THEMES[th];
+  ["bg","card","ink","sub","line","accent","accent-ink","gold","chip","dot"].forEach(function(k){r.style.removeProperty("--"+k)});
+  if(t.l){
+    var dark=!!(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches),set=dark?t.d:t.l;
+    Object.keys(set).forEach(function(k){r.style.setProperty("--"+k,set[k])});
+  }
+  var h=$("thp");h.textContent="배색 ";
+  TH_KEYS.forEach(function(k){
+    var b=document.createElement("button");b.className=k===th?"on":"";b.textContent=THEMES[k].s;
+    b.onclick=function(){th=k;try{localStorage.setItem("closet-th",k)}catch(e){}applyTheme()};
+    h.appendChild(b);
+  });
+}
+try{th=localStorage.getItem("closet-th")||"navy"}catch(e){}
+if(!THEMES[th])th="navy";
+applyTheme();
+try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",applyTheme)}catch(e){}
+/* ===== /배색 ===== */
 
 /* ===== 내일 코디 추천 ===== */
 var wx=null,wxTried=false;
